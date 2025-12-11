@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Inventario Materiali</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input, button { padding: 10px; width: 100%; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<h2>Carica Materiale</h2>
+
+<div id="reader" style="width:300px;"></div>
+
+<form id="form">
+  <input id="id_bobina" placeholder="ID Bobina (auto)" readonly />
+  <input id="nome" placeholder="Tipo materiale" />
+  <input id="metri" placeholder="Metri totali" type="number" />
+  <button type="submit">Salva</button>
+</form>
+
+<script>
+let scanner = new Html5Qrcode("reader");
+
+scanner.start(
+  { facingMode: "environment" },
+  { fps: 10, qrbox: 250 },
+  qr => {
+    document.getElementById("id_bobina").value = qr;
+    scanner.stop();
+  }
+);
+
+document.getElementById("form").addEventListener("submit", async e => {
+  e.preventDefault();
+  
+  await fetch("YOUR_WEBAPP_URL", {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      id: document.getElementById("id_bobina").value,
+      name: document.getElementById("nome").value,
+      meters: document.getElementById("metri").value,
+      date: new Date().toISOString()
+    })
+  });
+
+  alert("Salvato!");
+});
+</script>
+
+</body>
+</html>
